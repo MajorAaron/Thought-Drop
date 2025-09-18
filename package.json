@@ -1,0 +1,23 @@
+{
+  "name": "obsidian-quick-note",
+  "version": "1.0.0",
+  "description": "Spotlight-like quick note capture for Obsidian",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "dist": "electron-builder --mac"
+  },
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.0.0"
+  },
+  "build": {
+    "appId": "com.obsidian.quicknote",
+    "productName": "Obsidian Quick Note",
+    "mac": {
+      "category": "public.app-category.productivity",
+      "icon": "icon.icns"
+    }
+  }
+}
