@@ -14,6 +14,7 @@ function createWindow() {
     resizable: false,
     show: false,
     skipTaskbar: true,
+    icon: path.join(__dirname, 'icon.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -61,6 +62,11 @@ function hideWindow() {
 }
 
 app.whenReady().then(() => {
+  // Set dock icon for macOS
+  if (process.platform === 'darwin') {
+    app.dock.setIcon(path.join(__dirname, 'icon.png'));
+  }
+
   createWindow();
 
   // Register global shortcut (Cmd+Shift+Space)

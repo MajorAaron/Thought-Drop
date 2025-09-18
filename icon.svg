@@ -1,0 +1,35 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="512" cy="512" r="480" fill="url(#gradient1)" />
+
+  <!-- Thought Drop icon -->
+  <g transform="translate(512, 512)">
+    <!-- Drop shape -->
+    <path d="M 0 -180 C -100 -180 -180 -100 -180 0 C -180 80 -120 140 -60 180 L 0 220 L 60 180 C 120 140 180 80 180 0 C 180 -100 100 -180 0 -180 Z"
+          fill="white"
+          opacity="0.95"/>
+
+    <!-- Lightning bolt inside drop (representing quick thought) -->
+    <path d="M -40 -60 L 10 -60 L -20 0 L 30 0 L -10 80 L 50 -20 L 10 -20 L 40 -80 Z"
+          fill="url(#gradient2)"
+          stroke="#4a5568"
+          stroke-width="4"/>
+
+    <!-- Small dots for thought effect -->
+    <circle cx="-120" cy="-120" r="20" fill="white" opacity="0.7"/>
+    <circle cx="-150" cy="-80" r="15" fill="white" opacity="0.6"/>
+    <circle cx="120" cy="-120" r="18" fill="white" opacity="0.7"/>
+  </g>
+
+  <!-- Gradients -->
+  <defs>
+    <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f093fb;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f5576c;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+</svg>
