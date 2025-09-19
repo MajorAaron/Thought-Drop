@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Thought Drop is an Electron-based macOS application that provides a Spotlight-like quick note capture interface for Obsidian. The app uses a global keyboard shortcut (⌘+Shift+Space) to instantly capture thoughts and save them directly to an Obsidian vault.
+Thought Drop is an Electron-based macOS application that provides a Spotlight-like quick note capture interface. The app uses a global keyboard shortcut (⌘+Shift+Space) to instantly capture thoughts and save them directly to a local folder.
 
 ## Commands
 
@@ -22,10 +22,10 @@ npm start
 npm run dist
 
 # After building, open the app directly
-open "dist/mac-arm64/Obsidian Quick Note.app"
+open "dist/mac-arm64/Thought Drop.app"
 
 # Or install from DMG
-open "dist/Obsidian Quick Note-1.0.0-arm64.dmg"
+open "dist/Thought Drop-1.0.0-arm64.dmg"
 ```
 
 ## Architecture
@@ -35,7 +35,7 @@ open "dist/Obsidian Quick Note-1.0.0-arm64.dmg"
 1. **main.js:1-101** - Main Electron process
    - Creates frameless, transparent, always-on-top window
    - Manages global shortcut registration (⌘+Shift+Space)
-   - Handles IPC communication for note saving via Obsidian URI protocol
+   - Handles IPC communication for note saving to local folder
    - Auto-hides window on blur or after save
 
 2. **renderer.js** - Renderer process
@@ -49,7 +49,7 @@ open "dist/Obsidian Quick Note-1.0.0-arm64.dmg"
 
 ### Key Implementation Details
 
-- **Obsidian Integration**: Uses `obsidian://new?vault=OBSIDIAN` URI protocol (main.js:80)
+- **Note Storage**: Saves notes directly to local folder (configurable via settings)
 - **Window Configuration**: 600x250px, centered horizontally at 15% from top (main.js:8-22)
 - **Note Naming**: Auto-generates `Mac-Note-YYYY-MM-DD-HH-MM-SS` format if no title provided (main.js:75-76)
 - **Security**: Context isolation enabled, node integration disabled (main.js:17-20)
@@ -57,12 +57,12 @@ open "dist/Obsidian Quick Note-1.0.0-arm64.dmg"
 ## Important Configuration
 
 ### Hardcoded Values
-- **Obsidian vault name**: "OBSIDIAN" (main.js:80) - Change this to match your vault name
+- **Default notes folder**: "~/Documents/Thought Drop" (main.js:11) - Configurable via UI
 - **Global shortcut**: "CommandOrControl+Shift+Space" (main.js:67)
 - **Window dimensions**: 600x250 (main.js:9-10)
 
 ### Build Configuration
-- **App ID**: com.obsidian.quicknote
+- **App ID**: com.thoughtdrop.app
 - **Icon files**: icon.icns (macOS), icon.png (fallback)
 - **Platform**: macOS ARM64 primary target
 
@@ -80,11 +80,8 @@ open "dist/Obsidian Quick Note-1.0.0-arm64.dmg"
 
 ## Common Tasks
 
-### Changing the Obsidian Vault
-Edit line 80 in main.js:
-```javascript
-const obsidianUrl = `obsidian://new?vault=YOUR_VAULT_NAME&file=${encodedPath}&content=${encodedBody}&silent=true`;
-```
+### Changing the Notes Folder
+The notes folder can be changed directly in the app UI by clicking the "Change" button next to the folder path.
 
 ### Modifying the Global Shortcut
 Edit line 67 in main.js:
@@ -100,6 +97,6 @@ Edit lines 9-10 and 30-33 in main.js for dimensions and positioning.
 No automated tests currently. Manual testing involves:
 1. Launch app with `npm start`
 2. Test global shortcut activation
-3. Verify note saves to Obsidian
+3. Verify note saves to configured folder
 4. Test ESC and ⌘+Enter shortcuts
 5. Verify auto-hide on blur

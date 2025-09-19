@@ -1,4 +1,4 @@
-const { app, BrowserWindow, globalShortcut, ipcMain, shell } = require('electron');
+const { app, BrowserWindow, globalShortcut, ipcMain, dialog } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
@@ -8,6 +8,7 @@ let registeredShortcut = null;
 let settingsPath;
 
 const DEFAULT_SHORTCUT = 'CommandOrControl+Shift+=';
+const DEFAULT_VAULT_PATH = path.join(app.getPath('home'), 'Documents', 'Thought Drop');
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -73,34 +74,50 @@ function ensureSettingsPath() {
   return settingsPath;
 }
 
-function readShortcutFromDisk() {
+function readSettingsFromDisk() {
   const filePath = ensureSettingsPath();
 
   if (!fs.existsSync(filePath)) {
-    return DEFAULT_SHORTCUT;
+    return {
+      globalShortcut: DEFAULT_SHORTCUT,
+      vaultPath: DEFAULT_VAULT_PATH
+    };
   }
 
   try {
     const raw = fs.readFileSync(filePath, 'utf8');
     const parsed = JSON.parse(raw);
-    if (parsed && typeof parsed.globalShortcut === 'string' && parsed.globalShortcut.trim()) {
-      return parsed.globalShortcut.trim();
-    }
+    return {
+      globalShortcut: parsed.globalShortcut || DEFAULT_SHORTCUT,
+      vaultPath: parsed.vaultPath || DEFAULT_VAULT_PATH
+    };
   } catch (error) {
-    console.warn('Failed to read shortcut settings:', error);
+    console.warn('Failed to read settings:', error);
+    return {
+      globalShortcut: DEFAULT_SHORTCUT,
+      vaultPath: DEFAULT_VAULT_PATH
+    };
   }
+}
 
-  return DEFAULT_SHORTCUT;
+function readShortcutFromDisk() {
+  const settings = readSettingsFromDisk();
+  return settings.globalShortcut;
+}
+
+function persistSettings(updates) {
+  try {
+    const filePath = ensureSettingsPath();
+    const currentSettings = readSettingsFromDisk();
+    const newSettings = { ...currentSettings, ...updates };
+    fs.writeFileSync(filePath, JSON.stringify(newSettings, null, 2), 'utf8');
+  } catch (error) {
+    console.warn('Failed to save settings:', error);
+  }
 }
 
 function persistShortcut(shortcut) {
-  try {
-    const filePath = ensureSettingsPath();
-    const payload = { globalShortcut: shortcut };
-    fs.writeFileSync(filePath, JSON.stringify(payload, null, 2), 'utf8');
-  } catch (error) {
-    console.warn('Failed to save shortcut settings:', error);
-  }
+  persistSettings({ globalShortcut: shortcut });
 }
 
 function setGlobalShortcut(accelerator, options = {}) {
@@ -184,20 +201,84 @@ app.whenReady().then(() => {
 
   createWindow();
 
-  // Handle save note
+  // Handle save note - Direct file saving
   ipcMain.handle('save-note', async (event, { title, body }) => {
-    // Generate filename: Mac-Note-YYYY-MM-DD-HH-MM-SS
-    const now = new Date();
-    const dateTime = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}-${String(now.getHours()).padStart(2, '0')}-${String(now.getMinutes()).padStart(2, '0')}-${String(now.getSeconds()).padStart(2, '0')}`;
-    const noteTitle = title || `Mac-Note-${dateTime}`;
-    const encodedBody = encodeURIComponent(body);
-    const encodedPath = encodeURIComponent(noteTitle);
-    // Using 'create' instead of 'new' to create note without opening it
-    const obsidianUrl = `obsidian://new?vault=OBSIDIAN&file=${encodedPath}&content=${encodedBody}&silent=true`;
+    try {
+      // Get vault path from settings
+      const settings = readSettingsFromDisk();
+      const vaultPath = settings.vaultPath;
 
-    shell.openExternal(obsidianUrl);
-    hideWindow();
-    return { success: true };
+      // Ensure vault directory exists
+      if (!fs.existsSync(vaultPath)) {
+        fs.mkdirSync(vaultPath, { recursive: true });
+      }
+
+      // Generate filename: Mac-Note-YYYY-MM-DD-HH-MM-SS
+      const now = new Date();
+      const dateTime = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}-${String(now.getHours()).padStart(2, '0')}-${String(now.getMinutes()).padStart(2, '0')}-${String(now.getSeconds()).padStart(2, '0')}`;
+      const noteTitle = title || `Mac-Note-${dateTime}`;
+
+      // Sanitize filename (remove invalid characters)
+      const sanitizedTitle = noteTitle.replace(/[<>:"/\\|?*]/g, '-');
+      const fileName = `${sanitizedTitle}.md`;
+      const filePath = path.join(vaultPath, fileName);
+
+      // Prepare note content with optional title as heading
+      let noteContent = body;
+      if (title) {
+        noteContent = `# ${title}\n\n${body}`;
+      }
+
+      // Write the file
+      fs.writeFileSync(filePath, noteContent, 'utf8');
+
+      hideWindow();
+      return { success: true, filePath };
+    } catch (error) {
+      console.error('Failed to save note:', error);
+      return { success: false, error: error.message };
+    }
+  });
+
+  // Handle vault path operations
+  ipcMain.handle('get-vault-path', () => {
+    const settings = readSettingsFromDisk();
+    return settings.vaultPath;
+  });
+
+  ipcMain.handle('set-vault-path', async (event, vaultPath) => {
+    try {
+      // Validate path
+      if (!vaultPath || typeof vaultPath !== 'string') {
+        return { success: false, error: 'Invalid path' };
+      }
+
+      // Create directory if it doesn't exist
+      if (!fs.existsSync(vaultPath)) {
+        fs.mkdirSync(vaultPath, { recursive: true });
+      }
+
+      persistSettings({ vaultPath });
+      return { success: true, vaultPath };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  });
+
+  ipcMain.handle('select-vault-directory', async () => {
+    const result = await dialog.showOpenDialog(mainWindow, {
+      properties: ['openDirectory', 'createDirectory'],
+      title: 'Select folder to save notes',
+      buttonLabel: 'Select Folder'
+    });
+
+    if (result.canceled) {
+      return { success: false, canceled: true };
+    }
+
+    const vaultPath = result.filePaths[0];
+    persistSettings({ vaultPath });
+    return { success: true, vaultPath };
   });
 
   // Handle escape

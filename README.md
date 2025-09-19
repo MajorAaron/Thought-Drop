@@ -1,8 +1,8 @@
-# Obsidian Quick Note
+# Thought Drop
 
-A Spotlight-like quick note capture application for Obsidian, built with Electron. Instantly capture thoughts and ideas with a global keyboard shortcut, seamlessly saving them directly to your Obsidian vault.
+A Spotlight-like quick note capture application built with Electron. Instantly capture thoughts and ideas with a global keyboard shortcut, seamlessly saving them directly to your local notes folder.
 
-![Obsidian Quick Note](https://img.shields.io/badge/Platform-macOS-blue?style=flat-square)
+![Thought Drop](https://img.shields.io/badge/Platform-macOS-blue?style=flat-square)
 ![Electron](https://img.shields.io/badge/Built%20with-Electron-47848F?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
 
@@ -11,7 +11,7 @@ A Spotlight-like quick note capture application for Obsidian, built with Electro
 - **Global Hotkey**: Press `⌘+Shift+Space` from anywhere to instantly open the note capture window
 - **Spotlight-like UI**: Beautiful, translucent interface that appears centered on your screen
 - **Quick Capture**: Minimal, distraction-free interface for rapid note-taking
-- **Obsidian Integration**: Notes are automatically saved to your Obsidian vault using the `obsidian://` protocol
+- **Local Storage**: Notes are automatically saved to your configured local folder
 - **Smart Naming**: Auto-generates timestamped filenames if no title is provided
 - **Keyboard Shortcuts**: 
   - `⌘+Enter` to save
@@ -24,14 +24,14 @@ A Spotlight-like quick note capture application for Obsidian, built with Electro
 
 - macOS (tested on macOS 10.15+)
 - Node.js 16+ 
-- Obsidian installed and configured
+- A folder to save your notes
 
 ### Quick Start (Development)
 
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd "Obsidian Note Plugin/Thought Drop"
+   cd "Thought Drop"
    ```
 
 2. **Install dependencies**
@@ -56,14 +56,14 @@ A Spotlight-like quick note capture application for Obsidian, built with Electro
    ```
 
 2. **Install the app**
-   - The built app will be in `dist/mac-arm64/Obsidian Quick Note.app`
+   - The built app will be in `dist/mac-arm64/Thought Drop.app`
    - Drag it to your Applications folder
    - Double-click to launch (it will run in the background)
    - Press `⌘+Shift+Space` from anywhere to capture notes!
 
 ### Alternative: Use the DMG installer
 
-- Open `dist/Obsidian Quick Note-1.0.0-arm64.dmg`
+- Open `dist/Thought Drop-1.0.0-arm64.dmg`
 - Drag the app to Applications folder
 - Launch from Applications or Spotlight
 
@@ -73,7 +73,7 @@ A Spotlight-like quick note capture application for Obsidian, built with Electro
 2. **Capture a note** - Press `⌘+Shift+Space` from anywhere to open the note capture window
 3. **Type your note** - Enter a title (optional) and your note content
 4. **Save** - Press `⌘+Enter` or click the Save button
-5. **Auto-save** - The note will be automatically saved to your Obsidian vault and the window will close
+5. **Auto-save** - The note will be automatically saved to your configured folder and the window will close
 
 ### Note Naming Convention
 
@@ -82,11 +82,11 @@ A Spotlight-like quick note capture application for Obsidian, built with Electro
 
 ## ⚙️ Configuration
 
-The app is configured to work with an Obsidian vault named "OBSIDIAN". To change this:
+The app saves notes to `~/Documents/Thought Drop` by default. To change this:
 
-1. Open `main.js`
-2. Find line 80: `obsidian://new?vault=OBSIDIAN&file=${encodedPath}&content=${encodedBody}&silent=true`
-3. Replace `OBSIDIAN` with your vault name
+1. Click the "Change" button next to the folder path in the app UI
+2. Select your desired folder
+3. The setting will be saved automatically
 
 ## 🛠️ Development
 
@@ -106,7 +106,7 @@ The app is configured to work with an Obsidian vault named "OBSIDIAN". To change
 - **Electron**: Cross-platform desktop app framework
 - **Node.js**: JavaScript runtime
 - **HTML/CSS/JavaScript**: Frontend technologies
-- **Obsidian URI Protocol**: Integration with Obsidian
+- **Local File System**: Direct file saving
 
 ### Building
 
@@ -123,11 +123,11 @@ The app uses `electron-builder` for packaging:
 - Try restarting the app
 - Check if another app is using the same hotkey combination
 
-### Notes Not Saving to Obsidian
+### Notes Not Saving
 
-- Verify Obsidian is installed and running
-- Check that your vault name matches the configuration
-- Ensure Obsidian URI protocol is enabled in Obsidian settings
+- Verify the folder path exists and is writable
+- Check folder permissions
+- Try selecting a different folder via the app UI
 
 ### App Won't Start
 
@@ -157,4 +157,4 @@ If you encounter any issues or have questions:
 
 ---
 
-**Enjoy capturing your thoughts instantly with Obsidian Quick Note!** 🎉
+**Enjoy capturing your thoughts instantly with Thought Drop!** 🎉

@@ -1,7 +1,7 @@
 {
-  "name": "obsidian-quick-note",
+  "name": "thought-drop",
   "version": "1.0.0",
-  "description": "Spotlight-like quick note capture for Obsidian",
+  "description": "Spotlight-like quick note capture application",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
@@ -14,8 +14,8 @@
     "sharp": "^0.34.4"
   },
   "build": {
-    "appId": "com.obsidian.quicknote",
-    "productName": "Obsidian Quick Note",
+    "appId": "com.thoughtdrop.app",
+    "productName": "Thought Drop",
     "mac": {
       "category": "public.app-category.productivity",
       "icon": "icon.icns"

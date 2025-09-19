@@ -5,6 +5,8 @@ const cancelBtn = document.getElementById('cancel-btn');
 const changeShortcutBtn = document.getElementById('change-shortcut-btn');
 const shortcutValue = document.getElementById('shortcut-value');
 const shortcutFeedback = document.getElementById('shortcut-feedback');
+const changeVaultBtn = document.getElementById('change-vault-btn');
+const vaultPathValue = document.getElementById('vault-path-value');
 
 const DEFAULT_SHORTCUT = 'CommandOrControl+Shift+=';
 const isMac = /Mac/i.test(navigator.platform);
@@ -343,4 +345,38 @@ window.electronAPI.onClearForm(() => {
   clearForm();
 });
 
+async function loadVaultPath() {
+  try {
+    const vaultPath = await window.electronAPI.getVaultPath();
+    if (vaultPath) {
+      // Show only the last part of the path for brevity
+      const pathParts = vaultPath.split('/');
+      const displayPath = pathParts.length > 2
+        ? '.../' + pathParts.slice(-2).join('/')
+        : vaultPath;
+      vaultPathValue.textContent = displayPath;
+      vaultPathValue.title = vaultPath;
+    }
+  } catch (err) {
+    vaultPathValue.textContent = 'Not set';
+  }
+}
+
+async function changeVaultPath() {
+  try {
+    const result = await window.electronAPI.selectVaultDirectory();
+    if (result.success) {
+      await loadVaultPath();
+      showShortcutFeedback('Vault path updated', 'success');
+    } else if (!result.canceled) {
+      showShortcutFeedback('Failed to set vault path', 'error');
+    }
+  } catch (err) {
+    showShortcutFeedback('Failed to set vault path', 'error');
+  }
+}
+
+changeVaultBtn.addEventListener('click', changeVaultPath);
+
 loadShortcutPreference();
+loadVaultPath();

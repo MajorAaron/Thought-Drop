@@ -32,6 +32,7 @@
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border-radius: 14px;
+      border: 1px solid rgba(192, 192, 192, 0.45);
       box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5),
                   0 0 1px rgba(255, 255, 255, 0.1) inset;
       overflow: hidden;
@@ -237,6 +238,10 @@
         <div class="shortcut-config">
           <span class="shortcut-label">Global shortcut: <span id="shortcut-value">Loading…</span></span>
           <button id="change-shortcut-btn" class="link-button" type="button">Change</button>
+        </div>
+        <div class="shortcut-config">
+          <span class="shortcut-label">Save to: <span id="vault-path-value" title="">Loading…</span></span>
+          <button id="change-vault-btn" class="link-button" type="button">Change</button>
         </div>
         <span id="shortcut-feedback" class="shortcut-feedback" aria-live="polite"></span>
       </div>

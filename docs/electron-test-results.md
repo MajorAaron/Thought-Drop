@@ -5,7 +5,7 @@
 
 ## Test Summary
 
-Both Electron applications successfully launched and are running. They are spotlight-style quick capture windows for Obsidian notes.
+Both Electron applications successfully launched and are running. They are spotlight-style quick capture windows for note-taking.
 
 ## 1. electron-app Test Results
 
@@ -21,7 +21,7 @@ Both Electron applications successfully launched and are running. They are spotl
 
 ### Features
 - Global shortcut: `Cmd+Shift+N`
-- Creates notes in OBSIDIAN vault → Inbox folder
+- Creates notes in configured folder
 - Frameless, transparent window
 - Always on top behavior
 - Auto-hides on blur
@@ -53,14 +53,14 @@ Both Electron applications successfully launched and are running. They are spotl
 
 ### To verify functionality:
 1. Type a note in the capture window
-2. Press Enter to save to Obsidian
-3. Check your Obsidian vault's Inbox folder for the new note
+2. Press Enter to save the note
+3. Check your configured folder for the new note
 
 ## Recommendations
 
 1. **Security**: Run `npm audit fix` in both directories to address vulnerabilities
 2. **Dependencies**: Update deprecated packages when possible
-3. **Testing**: Both apps require Obsidian to be installed with a vault named "OBSIDIAN"
+3. **Testing**: Both apps save notes to local folders (configurable)
 4. **Configuration**: electron-capture allows customization via config.json
 
 ## Commands to Run
@@ -83,4 +83,4 @@ npm start
 
 ## Current Status
 ✅ Both applications are currently running
-✅ Ready for manual testing of keyboard shortcuts and Obsidian integration
+✅ Ready for manual testing of keyboard shortcuts and note saving
